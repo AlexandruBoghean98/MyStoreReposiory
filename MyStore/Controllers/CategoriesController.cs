@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using MyStore.Data;
 using MyStore.Domain;
 using MyStore.Helpers;
+using MyStore.Helpers.Models;
 using System.Linq;
 
 namespace MyStore.Controllers
@@ -12,9 +14,12 @@ namespace MyStore.Controllers
     public class CategoriesController : ControllerBase
     {
         private readonly StoreContext context;
-        public CategoriesController(StoreContext context)
+        private readonly ICategoryRepository repository;
+
+        public CategoriesController(StoreContext context, ICategoryRepository repository)
         {
             this.context = context;
+            this.repository = repository;
         }
 
         [HttpGet]
@@ -37,9 +42,9 @@ namespace MyStore.Controllers
             //    Id = x.Categoryid
             //});
 
-            //foreach (var category in description2)
+            //foreach (var categoryFromDb in description2)
             //{
-            //    Console.WriteLine($"Id: {category.Id}, Description: {category.Descr}");
+            //    Console.WriteLine($"Id: {categoryFromDb.Id}, Description: {categoryFromDb.Descr}");
             //}
 
 
@@ -47,30 +52,35 @@ namespace MyStore.Controllers
         }
 
         [HttpGet("{id}")]
-        public ActionResult<Category> GetById(int id)
+        public ActionResult<CategoryModel> GetById(int id)
         {
-            var category = context.Categories.Find(id);
-            if (category == null)
+            var categoryFromDb = repository.GetCategoryById(id);
+            if (categoryFromDb == null)
             {
                 return NotFound();
             }
 
-            return Ok(category);
+            var model = categoryFromDb.ToCategoryModel();
+
+            return Ok(model);
         }
 
         [HttpPost]
-        public IActionResult Create(Category categoryToAdd)
+        public IActionResult Create(CategoryModel model)
         {
             if(!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            context.Categories.Add(categoryToAdd);
+            var categoryToSave = new Category();
+            categoryToSave = model.ToCategory();
+
+            context.Add(categoryToSave);
             context.SaveChanges();
 
             //return Ok(categoryToAdd);
-            return CreatedAtAction(nameof(GetById), new {id = categoryToAdd.Categoryid}, categoryToAdd);
+            return CreatedAtAction(nameof(GetById), new { id = categoryToSave.Categoryid }, categoryToSave.ToCategoryModel());
         }
 
         [HttpPut("{id}")]

@@ -12,7 +12,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\MyStore.Data\MyStore.Data.csproj" />
     <ProjectReference Include="..\MyStore.Domain\MyStore.Domain.csproj" />
     <ProjectReference Include="..\MyStore.Services\MyStore.Services.csproj" />
   </ItemGroup>
