@@ -1,9 +1,6 @@
 ﻿using MyStore.Domain;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks; 
 
 namespace MyStore.Data
 {
@@ -15,10 +12,35 @@ namespace MyStore.Data
         {
             this.storeContext = storeContext;
         }
-        
+
+        public Category Add(Category category)
+        {
+            var addedEntity = storeContext.Categories.Add(category).Entity;
+            storeContext.SaveChanges();
+            return addedEntity;
+        }
+
+        public int Delete(Category category)
+        {
+            storeContext.Categories.Remove(category);
+            return storeContext.SaveChanges();
+        }
+
+        public IEnumerable<Category> GetAll()
+        {
+            return storeContext.Categories.ToList();
+        }
+
         public Category? GetCategoryById(int id)
         {
             return storeContext.Categories.Find(id);
+        }
+
+        public Category Update(Category category)
+        {
+            var updatedCategory = storeContext.Categories.Update(category).Entity;
+            storeContext.SaveChanges();
+            return updatedCategory;
         }
     }
 }

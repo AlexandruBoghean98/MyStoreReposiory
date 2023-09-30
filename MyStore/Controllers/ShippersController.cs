@@ -1,6 +1,7 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using MyStore.Domain;
+﻿using Microsoft.AspNetCore.Mvc;
+using MyStore.Data;
+using MyStore.Helpers;
+using MyStore.Helpers.Models;
 
 namespace MyStore.Controllers
 {
@@ -8,61 +9,81 @@ namespace MyStore.Controllers
     [ApiController]
     public class ShippersController : ControllerBase
     {
-        private readonly StoreContext context;
-        public ShippersController(StoreContext context)
-        {
-            this.context = context;
-        }
+        private readonly IShipperRepository repository;
 
-        [HttpGet]
-        public IEnumerable<Shipper> Get()
+        public ShippersController(IShipperRepository repository)
         {
-            var allShoppers = context.Shippers.ToList();
-            return allShoppers;
-        }
-
-        [HttpGet("{id}")]
-        public Shipper GetById(int id)
-        {
-            var shipper = context.Shippers.Find(id);
-            return shipper;
+            this.repository = repository;
         }
 
         [HttpPost]
-        public Shipper Create(Shipper shipperToAdd)
+        public IActionResult Create(ShipperModel shipperModel)
         {
-            context.Shippers.Add(shipperToAdd);
-            context.SaveChanges();
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
 
-            return shipperToAdd;
+            var shipperToSave = shipperModel.ToShipper();
+            repository.Add(shipperToSave);
+
+            return CreatedAtAction(nameof(GetById), new { id = shipperToSave.Shipperid }, shipperToSave.ToShipperModel());
+        }
+
+        [HttpDelete("{id}")]
+        public IActionResult Delete(int id)
+        {
+            var shipper = repository.GetCategoryById(id);
+            if (shipper == null)
+            {
+                return NotFound();
+            }
+            repository.Delete(shipper);
+
+            return NoContent();
+        }
+
+        [HttpGet]
+        public IEnumerable<ShipperModel> Get()
+        {
+            var allShippers = repository.GetAll();
+
+            var shipperModelsToReturn = new List<ShipperModel>();
+            foreach (var shipper in allShippers)
+            {
+                shipperModelsToReturn.Add(shipper.ToShipperModel());
+            }
+
+            return shipperModelsToReturn;
+        }
+
+        [HttpGet("{id}")]
+        public ActionResult<ShipperModel> GetById(int id)
+        {
+            var shipper = repository.GetCategoryById(id);
+            if (shipper == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(shipper.ToShipperModel());
         }
 
         [HttpPut("{id}")]
-        public Shipper Update(int id, Shipper shipper)
+        public ActionResult<ShipperModel> Update(int id, ShipperModel shipperModel)
         {
-            var shipperToUpdate = context.Shippers.Find(id);
-            if(shipperToUpdate != null)
+            var existingShipper = repository.GetCategoryById(id);
+            if (existingShipper == null)
             {
-                TryUpdateModelAsync(shipperToUpdate);
-                context.Shippers.Update(shipper);
-                context.SaveChanges();
+                return NotFound();
             }
 
-            return shipper;
-        }
+            TryUpdateModelAsync(existingShipper);
 
+            var shipperToUpdate = shipperModel.ToShipper();
+            repository.Update(shipperToUpdate);
 
-        [HttpDelete("{id}")]
-        public Shipper? Delete(int id)
-        {
-            var shipper = context.Shippers.Find(id);
-            if (shipper != null)
-            {
-                context.Shippers.Remove(shipper);
-                context.SaveChanges();
-            }
-
-            return null;
+            return Ok(shipperToUpdate.ToShipperModel());
         }
 
     }

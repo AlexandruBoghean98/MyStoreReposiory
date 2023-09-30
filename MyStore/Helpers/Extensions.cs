@@ -5,10 +5,16 @@ namespace MyStore.Helpers
 {
     public static class Extensions
     {
-        public static int CountWords(this string paragraph)
+
+        public static Category ToCategory(this CategoryModel model)
         {
-            var words = paragraph.Split(' ');
-            return words.Length;
+            var category = new Category();
+
+            category.Categoryid = model.Categoryid;
+            category.Description = model.Description;
+            category.Categoryname = model.Categoryname;
+
+            return category;
         }
 
         public static CategoryModel ToCategoryModel(this Category domainObject)
@@ -22,15 +28,26 @@ namespace MyStore.Helpers
             return model;
         }
 
-        public static Category ToCategory(this CategoryModel model)
+        public static Shipper ToShipper(this ShipperModel model)
         {
-            var category = new Category();
+            var shipper = new Shipper();
 
-            category.Categoryid = model.Categoryid;
-            category.Description = model.Description;
-            category.Categoryname = model.Categoryname;
+            shipper.Shipperid = model.Shipperid;
+            shipper.Companyname = model.Companyname;
+            shipper.Phone = model.Phone;
 
-            return category;
+            return shipper;
+        }
+
+        public static ShipperModel ToShipperModel(this Shipper shipperObject)
+        {
+            var model = new ShipperModel();
+
+            model.Shipperid = shipperObject.Shipperid;
+            model.Companyname = shipperObject.Companyname;
+            model.Phone = shipperObject.Phone;
+
+            return model;
         }
     }
 }

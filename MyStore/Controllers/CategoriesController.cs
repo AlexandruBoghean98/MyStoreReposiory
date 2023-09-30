@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using MyStore.Data;
 using MyStore.Domain;
 using MyStore.Helpers;
@@ -13,42 +11,56 @@ namespace MyStore.Controllers
     [ApiController]
     public class CategoriesController : ControllerBase
     {
-        private readonly StoreContext context;
         private readonly ICategoryRepository repository;
 
-        public CategoriesController(StoreContext context, ICategoryRepository repository)
+        public CategoriesController(ICategoryRepository repository)
         {
-            this.context = context;
             this.repository = repository;
         }
 
-        [HttpGet]
-        public IEnumerable<Category> Get()
+        [HttpPost]
+        public IActionResult Create(CategoryModel model)
         {
-            var text = "ala bala porto cala";
-            var noOfWords = text.CountWords();
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
 
-            var allCategories = context.Categories.ToList();
+            var categoryToSave = new Category();
+            categoryToSave = model.ToCategory();
 
-            var description = allCategories
-                .Where(category => category.Description.Contains("eer"))
-                .Select(category => category);
+            repository.Add(categoryToSave);
 
+            //return Ok(categoryToAdd);
+            return CreatedAtAction(nameof(GetById), new { id = categoryToSave.Categoryid }, categoryToSave.ToCategoryModel());
+        }
 
-            //var description2 = allCategories.Select(x =>
-            //new
-            //{
-            //    Descr = x.Description,
-            //    Id = x.Categoryid
-            //});
+        [HttpDelete("{id}")]
+        public IActionResult Delete(int id)
+        {
+            var category = repository.GetCategoryById(id);
+            if (category == null)
+            {
+                return NotFound();
+            }
 
-            //foreach (var categoryFromDb in description2)
-            //{
-            //    Console.WriteLine($"Id: {categoryFromDb.Id}, Description: {categoryFromDb.Descr}");
-            //}
+            repository.Delete(category);
 
+            return NoContent();
+        }
 
-            return allCategories;
+        [HttpGet]
+        public IEnumerable<CategoryModel> Get()
+        {
+            var allCategories = repository.GetAll();
+
+            var modelsToReturn = new List<CategoryModel>();
+            foreach (var category in allCategories)
+            {
+                modelsToReturn.Add(category.ToCategoryModel());
+            }
+
+            return modelsToReturn;
         }
 
         [HttpGet("{id}")]
@@ -65,53 +77,21 @@ namespace MyStore.Controllers
             return Ok(model);
         }
 
-        [HttpPost]
-        public IActionResult Create(CategoryModel model)
-        {
-            if(!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            var categoryToSave = new Category();
-            categoryToSave = model.ToCategory();
-
-            context.Add(categoryToSave);
-            context.SaveChanges();
-
-            //return Ok(categoryToAdd);
-            return CreatedAtAction(nameof(GetById), new { id = categoryToSave.Categoryid }, categoryToSave.ToCategoryModel());
-        }
-
         [HttpPut("{id}")]
-        public ActionResult<Category> Update(int id, Category category)
+        public ActionResult<CategoryModel> Update(int id, CategoryModel model)
         {
-            var existingCategory = context.Categories.Find(id);
-            if(existingCategory == null)
+            var existingCategory = repository.GetCategoryById(id);
+            if (existingCategory == null)
             {
                 return NotFound();
             }
 
             TryUpdateModelAsync(existingCategory);
-            context.Categories.Update(category);
-            context.SaveChanges();
 
-            return Ok(category);
-        }
+            var categoryToUpdate = model.ToCategory();
+            repository.Update(categoryToUpdate);
 
-        [HttpDelete("{id}")]
-        public IActionResult Delete(int id)
-        {
-            var category = context.Categories.Find(id);
-            if(category == null)
-            {
-                return NotFound();
-            }
-
-            context.Categories.Remove(category);
-            context.SaveChanges();
-
-            return NoContent();
+            return Ok(categoryToUpdate.ToCategoryModel());
         }
     }
 }
