@@ -6,9 +6,10 @@ namespace MyStore.Data
     {
         Category Add(Category category);
         int Delete(Category category);
-        IEnumerable<Category> GetAll();
+        IQueryable<Category> GetAll();
+        IEnumerable<Category> GetAll(int page);
+        IQueryable<Category> GetAll(int page, string? text);
         Category? GetCategoryById(int id);
         Category Update(Category category);
-
     }
 }

@@ -10,9 +10,9 @@ namespace MyStore.Helpers
         {
             var category = new Category();
 
-            category.Categoryid = model.Categoryid;
+            category.Categoryid = model.CategoryId;
             category.Description = model.Description;
-            category.Categoryname = model.Categoryname;
+            category.Categoryname = model.CategoryName;
 
             return category;
         }
@@ -21,9 +21,9 @@ namespace MyStore.Helpers
         {
             var model = new CategoryModel();
 
-            model.Categoryid = domainObject.Categoryid;
+            model.CategoryId = domainObject.Categoryid;
             model.Description = domainObject.Description;
-            model.Categoryname = domainObject.Categoryname;
+            model.CategoryName = domainObject.Categoryname;
 
             return model;
         }

@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using MyStore.Data;
 using MyStore.Domain;
 using MyStore.Helpers;
 using MyStore.Helpers.Models;
+using MyStore.Services;
 using System.Linq;
 
 namespace MyStore.Controllers
@@ -11,11 +11,11 @@ namespace MyStore.Controllers
     [ApiController]
     public class CategoriesController : ControllerBase
     {
-        private readonly ICategoryRepository repository;
+        private readonly ICategoryService categoryService;
 
-        public CategoriesController(ICategoryRepository repository)
+        public CategoriesController(ICategoryService categoryService)
         {
-            this.repository = repository;
+            this.categoryService = categoryService;
         }
 
         [HttpPost]
@@ -26,10 +26,16 @@ namespace MyStore.Controllers
                 return BadRequest(ModelState);
             }
 
+            // TODO: buisiness rules
+            if (categoryService.IsDuplicated(model.CategoryName))
+            {
+                ModelState.AddModelError(nameof(model.CategoryName), $"Category {model.CategoryName} already exists");
+                return Conflict(ModelState);
+            }
             var categoryToSave = new Category();
             categoryToSave = model.ToCategory();
 
-            repository.Add(categoryToSave);
+            categoryService.InsertNew(categoryToSave);
 
             //return Ok(categoryToAdd);
             return CreatedAtAction(nameof(GetById), new { id = categoryToSave.Categoryid }, categoryToSave.ToCategoryModel());
@@ -38,21 +44,28 @@ namespace MyStore.Controllers
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {
-            var category = repository.GetCategoryById(id);
+            var category = categoryService.GetCategory(id);
             if (category == null)
             {
                 return NotFound();
             }
 
-            repository.Delete(category);
+            categoryService.Remove(category);
 
             return NoContent();
         }
 
         [HttpGet]
-        public IEnumerable<CategoryModel> Get()
+        public IEnumerable<CategoryModel> Get(string? text, int pag = 1)
         {
-            var allCategories = repository.GetAll();
+            // implementam paginarea unor rezultate
+            // var pageSize = 2;
+            // le iau pe toate
+
+            var allCategories = categoryService.GetCategories(pag, text);
+
+            // filtrez si iau doar cele de afisat pe pagina curenta
+            // var currentPageItems = allCategories.Skip(pageSize * (pag - 1)).Take(pageSize).ToList();
 
             var modelsToReturn = new List<CategoryModel>();
             foreach (var category in allCategories)
@@ -66,7 +79,7 @@ namespace MyStore.Controllers
         [HttpGet("{id}")]
         public ActionResult<CategoryModel> GetById(int id)
         {
-            var categoryFromDb = repository.GetCategoryById(id);
+            var categoryFromDb = categoryService.GetCategory(id);
             if (categoryFromDb == null)
             {
                 return NotFound();
@@ -80,7 +93,7 @@ namespace MyStore.Controllers
         [HttpPut("{id}")]
         public ActionResult<CategoryModel> Update(int id, CategoryModel model)
         {
-            var existingCategory = repository.GetCategoryById(id);
+            var existingCategory = categoryService.GetCategory(id);
             if (existingCategory == null)
             {
                 return NotFound();
@@ -89,7 +102,7 @@ namespace MyStore.Controllers
             TryUpdateModelAsync(existingCategory);
 
             var categoryToUpdate = model.ToCategory();
-            repository.Update(categoryToUpdate);
+            categoryService.Update(categoryToUpdate);
 
             return Ok(categoryToUpdate.ToCategoryModel());
         }

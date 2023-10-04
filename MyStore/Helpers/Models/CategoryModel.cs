@@ -4,10 +4,10 @@ namespace MyStore.Helpers.Models
 {
     public class CategoryModel
     {
-        public int Categoryid { get; set; }
+        public int CategoryId { get; set; }
 
         [Required]
-        public string Categoryname { get; set; }
+        public string CategoryName { get; set; }
 
         [Required]
         [MinLength(10, ErrorMessage = "Trebuie sa fie o valoare data!")]
