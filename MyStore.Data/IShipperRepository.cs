@@ -1,6 +1,4 @@
 ﻿using MyStore.Domain;
-using System;
-using System.Linq;
 
 namespace MyStore.Data
 {
@@ -11,5 +9,6 @@ namespace MyStore.Data
         IEnumerable<Shipper> GetAll();
         Shipper? GetCategoryById(int id);
         Shipper Update(Shipper shipper);
+
     }
 }

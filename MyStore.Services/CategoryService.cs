@@ -1,7 +1,5 @@
 ﻿using MyStore.Data;
 using MyStore.Domain;
-using System;
-using System.Linq;
 
 namespace MyStore.Services
 {
