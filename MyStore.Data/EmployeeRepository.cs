@@ -45,19 +45,33 @@ namespace MyStore.Data
             return employees;
         }
 
-        public IQueryable<Employee> GetAll(int page, string text)
+        public IQueryable<Employee> GetAll(int page, string? text)
         {
-            throw new NotImplementedException();
+            var pageSize = 2;
+            var employees = storeContext.Employees.AsQueryable();
+
+            if (!string.IsNullOrEmpty(text))
+            {
+                employees = employees.Where(c => 
+                c.Firstname.Contains(text) || 
+                c.Lastname.Contains(text));
+            }
+
+            employees = employees.Skip(pageSize * (page - 1)).Take(pageSize);
+
+            return employees;
         }
 
         public Employee? GetEmployeeById(int id)
         {
-            throw new NotImplementedException();
+            return storeContext.Employees.Find(id);
         }
 
         public Employee Update(Employee employee)
         {
-            throw new NotImplementedException();
+            var updatedEmployee = storeContext.Employees.Add(employee).Entity;
+            storeContext.SaveChanges();
+            return updatedEmployee;
         }
     }
 }

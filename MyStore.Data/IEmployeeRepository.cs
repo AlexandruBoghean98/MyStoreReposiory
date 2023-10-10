@@ -10,6 +10,6 @@ namespace MyStore.Data
         int Delete(Employee employee);
         Employee Update(Employee employee);
         IEnumerable<Employee> GetAll(int page);
-        IQueryable<Employee> GetAll(int page, string text);
+        IQueryable<Employee> GetAll(int page, string? text);
     }
 }

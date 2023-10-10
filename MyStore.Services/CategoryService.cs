@@ -22,7 +22,6 @@ namespace MyStore.Services
             return categoryRepository.GetAll(page, text);
         }
 
-
         public Category? GetCategory(int id)
         {
             return categoryRepository.GetCategoryById(id);
