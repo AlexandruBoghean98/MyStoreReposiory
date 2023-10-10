@@ -14,9 +14,11 @@ builder.Services.AddDbContext<StoreContext>(options =>
 
 //repository
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
+builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
 builder.Services.AddScoped<IShipperRepository, ShipperRepository>();
 //services
 builder.Services.AddScoped<ICategoryService, CategoryService>();
+builder.Services.AddScoped<ICustomerService, CustomerService>();
 builder.Services.AddScoped<IShipperService, ShipperService>();
 
 builder.Services.AddEndpointsApiExplorer();

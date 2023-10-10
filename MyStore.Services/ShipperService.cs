@@ -10,16 +10,41 @@ namespace MyStore.Services
 {
     public class ShipperService : IShipperService
     {
-        private readonly IShipperRepository shipperService;
+        private readonly IShipperRepository shipperRepository;
 
-        public ShipperService(IShipperRepository shipperService)
+        public ShipperService(IShipperRepository shipperRepository)
         {
-            this.shipperService = shipperService;
+            this.shipperRepository = shipperRepository;
         }
 
-        public Shipper? GetShipper(int id)
+        public Shipper? GetShipperById(int id)
         {
-            return shipperService.GetCategoryById(id);
+            return shipperRepository.GetShipperById(id);
         }
+
+        public IEnumerable<Shipper> GetShippers(int page)
+        {
+            return shipperRepository.GetAll(page);
+        }
+
+        public IEnumerable<Shipper> GetShippers(int page, string? text)
+        {
+            return shipperRepository.GetAll(page, text);
+        }
+
+        public Shipper InsertNew(Shipper shipper)
+        {
+            return shipperRepository.Add(shipper);
+        }
+
+        public int Remove(Shipper shipper)
+        {
+            return shipperRepository.Delete(shipper);
+        }
+        public Shipper Update(Shipper shipper)
+        {
+            return shipperRepository.Update(shipper);
+        }
+
     }
 }

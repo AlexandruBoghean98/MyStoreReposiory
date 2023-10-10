@@ -5,11 +5,11 @@ VisualStudioVersion = 17.7.34024.191
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MyStore", "MyStore.csproj", "{25A9FC34-D81A-4A95-91FE-FADFC52159A1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyStore.Data", "..\MyStore.Data\MyStore.Data.csproj", "{E21CD088-F5A7-42E1-B256-D80E1237BA54}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MyStore.Data", "..\MyStore.Data\MyStore.Data.csproj", "{E21CD088-F5A7-42E1-B256-D80E1237BA54}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyStore.Domain", "..\MyStore.Domain\MyStore.Domain.csproj", "{9D973F97-EF1C-496D-909F-89480F2BA2F3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MyStore.Domain", "..\MyStore.Domain\MyStore.Domain.csproj", "{9D973F97-EF1C-496D-909F-89480F2BA2F3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyStore.Services", "..\MyStore.Services\MyStore.Services.csproj", "{E5DA3FC0-D37C-4BE7-B43D-0D2BBF2A5A27}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MyStore.Services", "..\MyStore.Services\MyStore.Services.csproj", "{E5DA3FC0-D37C-4BE7-B43D-0D2BBF2A5A27}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

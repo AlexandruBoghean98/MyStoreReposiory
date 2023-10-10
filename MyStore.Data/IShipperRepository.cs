@@ -6,8 +6,10 @@ namespace MyStore.Data
     {
         Shipper Add(Shipper shipper);
         int Delete(Shipper shipper);
-        IEnumerable<Shipper> GetAll();
-        Shipper? GetCategoryById(int id);
+        IQueryable<Shipper> GetAll();
+        IEnumerable<Shipper> GetAll(int page);
+        IQueryable<Shipper> GetAll(int page, string? text);
+        Shipper? GetShipperById(int id);
         Shipper Update(Shipper shipper);
 
     }

@@ -6,6 +6,11 @@ namespace MyStore.Services
 {
     public interface IShipperService
     {
-        Shipper? GetShipper(int id);
+        IEnumerable<Shipper> GetShippers(int page);
+        IEnumerable<Shipper> GetShippers(int page, string? text);
+        Shipper? GetShipperById(int id);
+        Shipper InsertNew(Shipper shipper);
+        Shipper Update(Shipper shipper);
+        int Remove(Shipper shipper);
     }
 }

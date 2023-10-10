@@ -24,12 +24,40 @@ namespace MyStore.Data
             return storeContext.SaveChanges();
         }
 
-        public IEnumerable<Shipper> GetAll()
+        public IEnumerable<Shipper> GetAll(int page)
         {
-            return storeContext.Shippers.ToList();
+            var pageSize = 2;
+            var shippers =
+                storeContext
+                .Shippers
+                .Skip(pageSize * (page - 1))
+                .Take(pageSize)
+                .ToList();
+
+            return shippers;
         }
 
-        public Shipper? GetCategoryById(int id)
+        public IQueryable<Shipper> GetAll(int page, string? text)
+        {
+            var pageSize = 2;
+            var shippers = storeContext.Shippers.AsQueryable();
+
+            if (!string.IsNullOrEmpty(text))
+            {
+                shippers = shippers.Where(c => c.Companyname.Contains(text));
+            }
+
+            shippers = shippers.Skip(pageSize * (page - 1)).Take(pageSize);
+
+            return shippers;
+        }
+
+        public IQueryable<Shipper> GetAll()
+        {
+            return storeContext.Shippers;
+        }
+
+        public Shipper? GetShipperById(int id)
         {
             return storeContext.Shippers.Find(id);
         }

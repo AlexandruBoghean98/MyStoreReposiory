@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using MyStore.Data;
+using MyStore.Domain;
 using MyStore.Helpers;
 using MyStore.Helpers.Models;
+using MyStore.Services;
 
 namespace MyStore.Controllers
 {
@@ -9,11 +11,11 @@ namespace MyStore.Controllers
     [ApiController]
     public class ShippersController : ControllerBase
     {
-        private readonly IShipperRepository repository;
+        private readonly IShipperService shipperService;
 
-        public ShippersController(IShipperRepository repository)
+        public ShippersController(IShipperService shipperService)
         {
-            this.repository = repository;
+            this.shipperService = shipperService;
         }
 
         [HttpPost]
@@ -24,8 +26,8 @@ namespace MyStore.Controllers
                 return BadRequest(ModelState);
             }
 
-            var shipperToSave = shipperModel.ToShipper();
-            repository.Add(shipperToSave);
+            var shipperToSave = new Shipper();
+            shipperToSave = shipperModel.ToShipper();
 
             return CreatedAtAction(nameof(GetById), new { id = shipperToSave.Shipperid }, shipperToSave.ToShipperModel());
         }
@@ -33,20 +35,20 @@ namespace MyStore.Controllers
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {
-            var shipper = repository.GetCategoryById(id);
+            var shipper = shipperService.GetShipperById(id);
             if (shipper == null)
             {
                 return NotFound();
             }
-            repository.Delete(shipper);
+            shipperService.Remove(shipper);
 
             return NoContent();
         }
 
         [HttpGet]
-        public IEnumerable<ShipperModel> Get()
+        public IEnumerable<ShipperModel> Get(string? text, int page = 1)
         {
-            var allShippers = repository.GetAll();
+            var allShippers = shipperService.GetShippers(page, text);
 
             var shipperModelsToReturn = new List<ShipperModel>();
             foreach (var shipper in allShippers)
@@ -60,7 +62,7 @@ namespace MyStore.Controllers
         [HttpGet("{id}")]
         public ActionResult<ShipperModel> GetById(int id)
         {
-            var shipper = repository.GetCategoryById(id);
+            var shipper = shipperService.GetShipperById(id);
             if (shipper == null)
             {
                 return NotFound();
@@ -72,7 +74,7 @@ namespace MyStore.Controllers
         [HttpPut("{id}")]
         public ActionResult<ShipperModel> Update(int id, ShipperModel shipperModel)
         {
-            var existingShipper = repository.GetCategoryById(id);
+            var existingShipper = shipperService.GetShipperById(id);
             if (existingShipper == null)
             {
                 return NotFound();
@@ -81,7 +83,7 @@ namespace MyStore.Controllers
             TryUpdateModelAsync(existingShipper);
 
             var shipperToUpdate = shipperModel.ToShipper();
-            repository.Update(shipperToUpdate);
+            shipperService.Update(shipperToUpdate);
 
             return Ok(shipperToUpdate.ToShipperModel());
         }
